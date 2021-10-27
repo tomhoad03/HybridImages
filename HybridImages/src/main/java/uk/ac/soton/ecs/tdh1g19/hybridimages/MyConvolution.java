@@ -18,7 +18,7 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage> {
         int imageHeight = image.getHeight();
         int imageWidth = image.getWidth();
 
-        FImage original = image.internalAssign(image);
+        FImage original = image.clone();
 
         // search for pixels not at the boundary
         for (int i = 0; i < imageHeight; i++) {
@@ -26,9 +26,9 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage> {
                 float result = 0;
                 int p = 0;
 
-                for (int m = j - ((kernelWidth - 1) / 2); m < j + ((kernelWidth - 1) / 2) - 1; m++) {
+                for (int m = j - ((kernelWidth - 1) / 2); m <= j + ((kernelWidth - 1) / 2); m++) {
                     int q = 0;
-                    for (int n = i - ((kernelHeight - 1) / 2); n < i + ((kernelHeight - 1) / 2) - 1; n++) {
+                    for (int n = i - ((kernelHeight - 1) / 2); n <= i + ((kernelHeight - 1) / 2); n++) {
                         if (m >= 0 && n >= 0 && m < imageWidth && n < imageHeight) {
                             float template = kernel[p][q];
                             float pixel = original.getPixel(m, n);
@@ -38,7 +38,7 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage> {
                     }
                     p++;
                 }
-                image.setPixel(j, i, result);
+                image.setPixel(j, i, (0 - result));
             }
         }
     }

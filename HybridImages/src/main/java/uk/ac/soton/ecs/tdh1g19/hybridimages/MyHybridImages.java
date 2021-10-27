@@ -24,17 +24,31 @@ public class MyHybridImages {
      */
     public static MBFImage makeHybrid(MBFImage lowImage, float lowSigma, MBFImage highImage, float highSigma) {
         try {
-            // Applies a low pass filter by convolution
+            // Creates an empty template
             int lowPassSize = (int) (8.0f * lowSigma + 1.0f);
             if (lowPassSize % 2 == 0) lowPassSize++;
             float[][] lowPassKernel = new float[lowPassSize][lowPassSize];
-            lowImage.processInplace(new MyConvolution(lowPassKernel));
 
-            // Applies a high pass filter by convolution
+            // Creates a low pass filter template
+            for (int i = 0; i < lowPassKernel.length; i++) {
+                for (int j = 0; j < lowPassKernel[0].length; j++) {
+                    lowPassKernel[i][j] = (float) 0.005;
+                }
+            }
+
+            // Applies a low pass filter by convolution
+            lowImage.processInplace(new MyConvolution(new float[][]{{1, 0, -1}, {2, 0, -2}, {1, 0, -1}}));
+            lowImage.processInplace(new MyConvolution(new float[][]{{1, 2, 1}, {0, 0, 0}, {-1, -2, -1}}));
+
+            // Creates an empty template
             int highPassSize = (int) (8.0f * highSigma + 1.0f);
             if (highPassSize % 2 == 0) highPassSize++;
             float[][] highPassKernel = new float[highPassSize][highPassSize];
-            // highImage.processInplace(new MyConvolution(highPassKernel));
+
+            // Creates a high pass filter template
+
+            // Applies a high pass filter by convolution
+            //highImage.processInplace(new MyConvolution(highPassKernel));
 
             return lowImage;
         } catch (Exception e) {
