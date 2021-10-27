@@ -38,7 +38,7 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage> {
                     }
                     p++;
                 }
-                image.setPixel(j, i, (0 - result));
+                image.setPixel(j, i, result);
             }
         }
     }

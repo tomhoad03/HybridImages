@@ -1,8 +1,10 @@
 package uk.ac.soton.ecs.tdh1g19.hybridimages;
 
 import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.processing.convolution.Gaussian2D;
 
 import java.io.File;
 import java.util.Objects;
@@ -24,33 +26,26 @@ public class MyHybridImages {
      */
     public static MBFImage makeHybrid(MBFImage lowImage, float lowSigma, MBFImage highImage, float highSigma) {
         try {
-            // Creates an empty template
+            // Determines the size of the kernel
             int lowPassSize = (int) (8.0f * lowSigma + 1.0f);
             if (lowPassSize % 2 == 0) lowPassSize++;
-            float[][] lowPassKernel = new float[lowPassSize][lowPassSize];
 
-            // Creates a low pass filter template
-            for (int i = 0; i < lowPassKernel.length; i++) {
-                for (int j = 0; j < lowPassKernel[0].length; j++) {
-                    lowPassKernel[i][j] = (float) 0.005;
-                }
-            }
-
-            // Applies a low pass filter by convolution
-            lowImage.processInplace(new MyConvolution(new float[][]{{1, 0, -1}, {2, 0, -2}, {1, 0, -1}}));
-            lowImage.processInplace(new MyConvolution(new float[][]{{1, 2, 1}, {0, 0, 0}, {-1, -2, -1}}));
-
-            // Creates an empty template
             int highPassSize = (int) (8.0f * highSigma + 1.0f);
             if (highPassSize % 2 == 0) highPassSize++;
-            float[][] highPassKernel = new float[highPassSize][highPassSize];
 
-            // Creates a high pass filter template
+            // Creates two low pass filter templates
+            FImage lowPassFilter = Gaussian2D.createKernelImage(lowPassSize, lowSigma);
+            FImage highPassFilter = Gaussian2D.createKernelImage(highPassSize, highSigma);
 
-            // Applies a high pass filter by convolution
-            //highImage.processInplace(new MyConvolution(highPassKernel));
+            // Applies a low pass filter by convolution
+            lowImage.processInplace(new MyConvolution(lowPassFilter.pixels));
 
-            return lowImage;
+            // Applies a high pass filter by convolution and subtraction
+            MBFImage originalHighImage = highImage.clone();
+            highImage.processInplace(new MyConvolution(highPassFilter.pixels));
+            MBFImage newHighImage = originalHighImage.subtract(highImage);
+
+            return lowImage.add(newHighImage);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -62,7 +57,7 @@ public class MyHybridImages {
             MBFImage catImage = ImageUtilities.readMBF(new File("D:\\Documents\\Coursework2\\HybridImages\\src\\main\\java\\uk\\ac\\soton\\ecs\\tdh1g19\\hybridimages\\images\\cat.bmp"));
             MBFImage dogImage = ImageUtilities.readMBF(new File("D:\\Documents\\Coursework2\\HybridImages\\src\\main\\java\\uk\\ac\\soton\\ecs\\tdh1g19\\hybridimages\\images\\dog.bmp"));
 
-            DisplayUtilities.display(Objects.requireNonNull(makeHybrid(catImage, 1, dogImage, 1)));
+            DisplayUtilities.display(Objects.requireNonNull(makeHybrid(dogImage, 5, catImage, 5)));
         } catch (Exception e) {
             e.printStackTrace();
         }
