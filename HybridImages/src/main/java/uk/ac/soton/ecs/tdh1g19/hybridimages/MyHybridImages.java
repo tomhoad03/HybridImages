@@ -54,11 +54,11 @@ public class MyHybridImages {
 
     public static void main(String[] args) {
         try {
-            MBFImage imageA = ImageUtilities.readMBF(new File("D:\\Documents\\Coursework2\\HybridImages\\src\\main\\java\\uk\\ac\\soton\\ecs\\tdh1g19\\hybridimages\\images\\dog.bmp"));
-            MBFImage imageB = ImageUtilities.readMBF(new File("D:\\Documents\\Coursework2\\HybridImages\\src\\main\\java\\uk\\ac\\soton\\ecs\\tdh1g19\\hybridimages\\images\\cat.bmp"));
+            MBFImage imageA = ImageUtilities.readMBF(new File("D:\\Documents\\Coursework2\\HybridImages\\src\\main\\java\\uk\\ac\\soton\\ecs\\tdh1g19\\hybridimages\\images\\johnson.bmp"));
+            MBFImage imageB = ImageUtilities.readMBF(new File("D:\\Documents\\Coursework2\\HybridImages\\src\\main\\java\\uk\\ac\\soton\\ecs\\tdh1g19\\hybridimages\\images\\trump.bmp"));
             MBFImage blank = ImageUtilities.readMBF(new File("D:\\Documents\\Coursework2\\HybridImages\\src\\main\\java\\uk\\ac\\soton\\ecs\\tdh1g19\\hybridimages\\images\\blank.bmp"));
 
-            MBFImage hybrid = makeHybrid(imageA, 5, imageB, 5);
+            MBFImage hybrid = makeHybrid(imageA, 5, imageB, 7);
 
             blank.drawImage(hybrid, 0, 0);
             blank.drawImage(ResizeProcessor.halfSize(Objects.requireNonNull(hybrid).clone()), 532, 256);
@@ -66,7 +66,7 @@ public class MyHybridImages {
             blank.drawImage(ResizeProcessor.halfSize(ResizeProcessor.halfSize(ResizeProcessor.halfSize(hybrid.clone()))), 956, 448);
             blank.drawImage(ResizeProcessor.halfSize(ResizeProcessor.halfSize(ResizeProcessor.halfSize(ResizeProcessor.halfSize(hybrid.clone())))), 1040, 480);
 
-            DisplayUtilities.display(hybrid);
+            DisplayUtilities.display(blank);
         } catch (Exception e) {
             e.printStackTrace();
         }
