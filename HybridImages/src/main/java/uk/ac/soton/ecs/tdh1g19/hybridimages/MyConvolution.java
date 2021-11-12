@@ -12,34 +12,33 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage> {
 
     @Override
     public void processImage(FImage image) {
-        int kernelHeight = kernel.length;
-        int kernelWidth = kernel[0].length;
+        try {
+            int kernelHeight = kernel.length;
+            int kernelWidth = kernel[0].length;
 
-        int imageHeight = image.getHeight();
-        int imageWidth = image.getWidth();
+            // Zero padding the image
+            FImage padded = image.padding((kernelWidth - 1) / 2, (kernelHeight - 1) / 2, (float) 0);
+            FImage clone = padded.clone();
 
-        FImage original = image.clone();
+            int imageHeight = padded.getHeight();
+            int imageWidth = padded.getWidth();
 
-        // search for pixels not at the boundary
-        for (int i = 0; i < imageHeight; i++) {
-            for (int j = 0; j < imageWidth; j++) {
-                float result = 0;
-                int p = 0;
+            // Look for pixels part of the original image
+            for (int i = (kernelHeight - 1) / 2; i < imageHeight - ((kernelHeight - 1) / 2); i++) {
+                for (int j = (kernelWidth - 1) / 2; j < imageWidth - ((kernelWidth - 1) / 2); j++) {
+                    float result = 0;
 
-                for (int m = j - ((kernelWidth - 1) / 2); m <= j + ((kernelWidth - 1) / 2); m++) {
-                    int q = 0;
-                    for (int n = i - ((kernelHeight - 1) / 2); n <= i + ((kernelHeight - 1) / 2); n++) {
-                        if (m >= 0 && n >= 0 && m < imageWidth && n < imageHeight) {
-                            float template = kernel[p][q];
-                            float pixel = original.getPixel(m, n);
-                            result += template * pixel;
+                    // Apply the template to the surrounding pixels to get a new value for the centre pixel
+                    for (int m = -((kernelHeight - 1) / 2); m < (kernelHeight - 1) / 2; m++) {
+                        for (int n = -((kernelWidth - 1) / 2); n < (kernelWidth - 1) / 2; n++) {
+                            result += kernel[m + ((kernelHeight - 1) / 2)][n + ((kernelWidth - 1) / 2)] * clone.getPixel(j + n, i + m);
                         }
-                        q++;
                     }
-                    p++;
+                    image.setPixel(j - ((kernelWidth - 1) / 2), i - ((kernelHeight - 1) / 2), result);
                 }
-                image.setPixel(j, i, result);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

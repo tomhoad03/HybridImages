@@ -1,18 +1,13 @@
 package uk.ac.soton.ecs.tdh1g19.hybridimages;
 
-import org.checkerframework.checker.units.qual.A;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.processing.convolution.Gaussian2D;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class MyHybridImages {
@@ -49,22 +44,21 @@ public class MyHybridImages {
             // Applies a high pass filter by convolution and subtraction
             MBFImage originalHighImage = highImage.clone();
             highImage.processInplace(new MyConvolution(highPassFilter.pixels));
-            MBFImage newHighImage = originalHighImage.subtract(highImage);
 
-            return lowImage.add(newHighImage);
+            return lowImage.add(originalHighImage.subtract(highImage));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public static void customHybrid() {
+    public static void main(String[] args) {
         try {
-            MBFImage imageA = ImageUtilities.readMBF(new File("D:\\Documents\\Coursework2\\HybridImages\\src\\main\\java\\uk\\ac\\soton\\ecs\\tdh1g19\\hybridimages\\images\\johnson.bmp"));
-            MBFImage imageB = ImageUtilities.readMBF(new File("D:\\Documents\\Coursework2\\HybridImages\\src\\main\\java\\uk\\ac\\soton\\ecs\\tdh1g19\\hybridimages\\images\\worm.bmp"));
+            MBFImage imageA = ImageUtilities.readMBF(new File("D:\\Documents\\Coursework2\\HybridImages\\src\\main\\java\\uk\\ac\\soton\\ecs\\tdh1g19\\hybridimages\\images\\dog.bmp"));
+            MBFImage imageB = ImageUtilities.readMBF(new File("D:\\Documents\\Coursework2\\HybridImages\\src\\main\\java\\uk\\ac\\soton\\ecs\\tdh1g19\\hybridimages\\images\\cat.bmp"));
             MBFImage blank = ImageUtilities.readMBF(new File("D:\\Documents\\Coursework2\\HybridImages\\src\\main\\java\\uk\\ac\\soton\\ecs\\tdh1g19\\hybridimages\\images\\blank.bmp"));
 
-            MBFImage hybrid = makeHybrid(imageA, 12, imageB, 12);
+            MBFImage hybrid = makeHybrid(imageA, 5, imageB, 5);
 
             blank.drawImage(hybrid, 0, 0);
             blank.drawImage(ResizeProcessor.halfSize(Objects.requireNonNull(hybrid).clone()), 532, 256);
@@ -72,13 +66,9 @@ public class MyHybridImages {
             blank.drawImage(ResizeProcessor.halfSize(ResizeProcessor.halfSize(ResizeProcessor.halfSize(hybrid.clone()))), 956, 448);
             blank.drawImage(ResizeProcessor.halfSize(ResizeProcessor.halfSize(ResizeProcessor.halfSize(ResizeProcessor.halfSize(hybrid.clone())))), 1040, 480);
 
-            DisplayUtilities.display(blank);
+            DisplayUtilities.display(hybrid);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) {
-        customHybrid();
     }
 }
